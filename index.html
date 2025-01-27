@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strength & Resistance Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://registry.npmmirror.com/vue/3.3.11/files/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    </link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            width: 100%;
+        }
+
+        .radio-button {
+            appearance: none;
+            background-color: #fff;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 0.15em solid currentColor;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+        }
+
+        .radio-button::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--form-control-color);
+            background-color: CanvasText;
+        }
+
+        .radio-button:checked::before {
+            transform: scale(1);
+        }
+
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .question {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .question .points {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .score-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            margin-top: 5rem;
+            margin-left: 8rem;
+            background-color: #ffffff;
+            border: 3px solid #004ca9;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        .score-box div {
+            width: 4rem;
+            height: 3rem;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            background-color: #fff;
+            border-radius: 0.25rem;
+        }
+
+        .score-box span {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .foot {
+            letter-spacing: 0.2rem;
+            font-size: 8px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen flex flex-col p-4 max-w-full">
+        <header class="bg-white text-blue-600 p-4 flex flex-col items-center shadow-md relative">
+            <div class="absolute top-22 left-36 score-box">
+                <div></div>
+                <span>/ 30</span>
+            </div>
+            <img src="https://i.imgur.com/9mOm7gP.png"
+                alt="Logo with a stylized 'S' and 'R' intertwined in a modern design" class="h-16 mb-4">
+            <h1 class="text-3xl font-bold mb-2">Strength & Resistance Quiz</h1>
+            <p class="text-sm text-gray-600">Test your knowledge on strength training and resistance exercises. Best of
+                luck!</p>
+        </header>
+        <div class="bg-blue-600 text-white p-4 shadow-md">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-col md:flex-row md:space-x-4 mb-4">
+                    <div class="w-full mb-4 md:mb-0">
+                        <label class="block text-lg font-medium mb-2">Instructor Name</label>
+                        <input type="text" v-model="instructorName"
+                            class="w-full p-2 border border-gray-300 rounded-lg shadow-sm">
+                    </div>
+                    <div class="w-full">
+                        <label class="block text-lg font-medium mb-2">Location</label>
+                        <input type="text" v-model="location"
+                            class="w-full p-2 border border-gray-300 rounded-lg shadow-sm">
+                    </div>
+                </div>
+                <div class="bg-white text-blue-600 p-4 rounded-lg shadow-md">
+                    <h2 class="text-lg font-bold mb-2">Instructions:</h2>
+                    <p class="mb-2">1. Read each question carefully.</p>
+                    <p class="mb-2">2. Select the best answer from the given options by marking the corresponding circle
+                        with a <i class="fas fa-check-circle"></i> tick mark, not by coloring the circle.</p>
+                    <p class="mb-2">3. Use a pen or pencil to mark your answers clearly.</p>
+                    <p class="mb-2">4. If multiple options are marked for a single question, the answer will be
+                        considered incorrect.</p>
+                    <p>5. Ensure all required questions are answered before submitting.</p>
+                </div>
+            </div>
+        </div>
+        <main class="min-h-screen flex p-4">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                <form @submit.prevent="submitQuiz">
+                    <div class="mb-8">
+                        <h3 class="section-header">1. Core Strength and Stabilization</h3>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">1. Which exercise primarily focuses on
+                                stabilizing core muscles? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question1" value="Deadlift" class="radio-button"
+                                        v-model="answers.question1">
+                                    <span class="ml-2">Deadlift</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question1" value="Plank" class="radio-button"
+                                        v-model="answers.question1">
+                                    <span class="ml-2">Plank</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question1" value="Bench Press" class="radio-button"
+                                        v-model="answers.question1">
+                                    <span class="ml-2">Bench Press</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question1" value="Leg Press" class="radio-button"
+                                        v-model="answers.question1">
+                                    <span class="ml-2">Leg Press</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">2. What is the primary purpose of
+                                progressive overload in resistance training? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question2" value="Preventing injury" class="radio-button"
+                                        v-model="answers.question2">
+                                    <span class="ml-2">Preventing injury</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question2" value="Increasing muscle engagement over time"
+                                        class="radio-button" v-model="answers.question2">
+                                    <span class="ml-2">Increasing muscle engagement over time</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question2" value="Targeting only fast-twitch fibers"
+                                        class="radio-button" v-model="answers.question2">
+                                    <span class="ml-2">Targeting only fast-twitch fibers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question2" value="Improving bone density"
+                                        class="radio-button" v-model="answers.question2">
+                                    <span class="ml-2">Improving bone density</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">3. Which of the following best describes
+                                'Time Under Tension' (TUT)? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question3"
+                                        value="The total time spent in a workout session" class="radio-button"
+                                        v-model="answers.question3">
+                                    <span class="ml-2">The total time spent in a workout session</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question3"
+                                        value="The time your muscles are actively working during an exercise"
+                                        class="radio-button" v-model="answers.question3">
+                                    <span class="ml-2">The time your muscles are actively working during an
+                                        exercise</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question3" value="The duration between sets"
+                                        class="radio-button" v-model="answers.question3">
+                                    <span class="ml-2">The duration between sets</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question3" value="The resting period during a workout"
+                                        class="radio-button" v-model="answers.question3">
+                                    <span class="ml-2">The resting period during a workout</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">4. What type of muscle fibers are primarily
+                                engaged during high-repetition, low-resistance exercises? <span
+                                    class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question4" value="Type 1 (Slow-Twitch)"
+                                        class="radio-button" v-model="answers.question4">
+                                    <span class="ml-2">Type 1 (Slow-Twitch)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question4" value="Type 2A" class="radio-button"
+                                        v-model="answers.question4">
+                                    <span class="ml-2">Type 2A</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question4" value="Type 2X (Fast-Twitch)"
+                                        class="radio-button" v-model="answers.question4">
+                                    <span class="ml-2">Type 2X (Fast-Twitch)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question4" value="All muscle fibers equally"
+                                        class="radio-button" v-model="answers.question4">
+                                    <span class="ml-2">All muscle fibers equally</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">5. Why are small, controlled movements
+                                emphasized in Physique 57 workouts? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question5" value="To increase calorie burn"
+                                        class="radio-button" v-model="answers.question5">
+                                    <span class="ml-2">To increase calorie burn</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question5" value="To target deep stabilizing muscles"
+                                        class="radio-button" v-model="answers.question5">
+                                    <span class="ml-2">To target deep stabilizing muscles</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question5" value="To focus solely on Type 2 fibers"
+                                        class="radio-button" v-model="answers.question5">
+                                    <span class="ml-2">To focus solely on Type 2 fibers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question5" value="To prioritize cardiovascular endurance"
+                                        class="radio-button" v-model="answers.question5">
+                                    <span class="ml-2">To prioritize cardiovascular endurance</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="section-header">2. Resistance Training Fundamentals</h3>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">6. How does muscle fatigue contribute to
+                                strength building? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question6"
+                                        value="It creates lactic acid, which strengthens muscle tissue."
+                                        class="radio-button" v-model="answers.question6">
+                                    <span class="ml-2">It creates lactic acid, which strengthens muscle tissue.</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question6"
+                                        value="It causes micro-tears in muscle fibers, leading to repair and growth."
+                                        class="radio-button" v-model="answers.question6">
+                                    <span class="ml-2">It causes micro-tears in muscle fibers, leading to repair and
+                                        growth.</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question6"
+                                        value="It prevents overtraining by signaling rest periods." class="radio-button"
+                                        v-model="answers.question6">
+                                    <span class="ml-2">It prevents overtraining by signaling rest periods.</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question6"
+                                        value="It avoids overuse of stabilizing muscles." class="radio-button"
+                                        v-model="answers.question6">
+                                    <span class="ml-2">It avoids overuse of stabilizing muscles.</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">7. What is a primary benefit of focusing on
+                                the posterior chain during workouts? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question7" value="Improving spinal alignment and posture"
+                                        class="radio-button" v-model="answers.question7">
+                                    <span class="ml-2">Improving spinal alignment and posture</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question7"
+                                        value="Increasing endurance for isometric holds" class="radio-button"
+                                        v-model="answers.question7">
+                                    <span class="ml-2">Increasing endurance for isometric holds</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question7"
+                                        value="Enhancing flexibility of the hip flexors" class="radio-button"
+                                        v-model="answers.question7">
+                                    <span class="ml-2">Enhancing flexibility of the hip flexors</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question7"
+                                        value="Reducing oxygen consumption during exercises" class="radio-button"
+                                        v-model="answers.question7">
+                                    <span class="ml-2">Reducing oxygen consumption during exercises</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">8. Which variable in resistance training
+                                prevents workout plateaus? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question8" value="Decreasing rest periods between sets"
+                                        class="radio-button" v-model="answers.question8">
+                                    <span class="ml-2">Decreasing rest periods between sets</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question8"
+                                        value="Introducing new variations or increased resistance" class="radio-button"
+                                        v-model="answers.question8">
+                                    <span class="ml-2">Introducing new variations or increased resistance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question8" value="Focusing exclusively on heavy weights"
+                                        class="radio-button" v-model="answers.question8">
+                                    <span class="ml-2">Focusing exclusively on heavy weights</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question8" value="Maintaining the same tempo throughout"
+                                        class="radio-button" v-model="answers.question8">
+                                    <span class="ml-2">Maintaining the same tempo throughout</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">9. Why is resistance training essential for
+                                bone health? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question9"
+                                        value="It decreases bone density loss through osteoblast stimulation."
+                                        class="radio-button" v-model="answers.question9">
+                                    <span class="ml-2">It decreases bone density loss through osteoblast
+                                        stimulation.</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question9"
+                                        value="It focuses on reducing joint movement to avoid stress."
+                                        class="radio-button" v-model="answers.question9">
+                                    <span class="ml-2">It focuses on reducing joint movement to avoid stress.</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question9"
+                                        value="It activates fast-twitch fibers to support bone health."
+                                        class="radio-button" v-model="answers.question9">
+                                    <span class="ml-2">It activates fast-twitch fibers to support bone health.</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question9"
+                                        value="It eliminates the need for weight-bearing activities."
+                                        class="radio-button" v-model="answers.question9">
+                                    <span class="ml-2">It eliminates the need for weight-bearing activities.</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">10. What does increasing the range of motion
+                                (ROM) during an exercise achieve? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question10"
+                                        value="Engages stabilizing muscles exclusively" class="radio-button"
+                                        v-model="answers.question10">
+                                    <span class="ml-2">Engages stabilizing muscles exclusively</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question10"
+                                        value="Enhances muscle engagement and flexibility" class="radio-button"
+                                        v-model="answers.question10">
+                                    <span class="ml-2">Enhances muscle engagement and flexibility</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question10" value="Prioritizes cardiovascular endurance"
+                                        class="radio-button" v-model="answers.question10">
+                                    <span class="ml-2">Prioritizes cardiovascular endurance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question10" value="Limits strain on Type 1 fibers"
+                                        class="radio-button" v-model="answers.question10">
+                                    <span class="ml-2">Limits strain on Type 1 fibers</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="section-header">3. Muscle Physiology and Fiber Types</h3>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">11. Which exercise best targets Type 2
+                                (Fast-Twitch) muscle fibers? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question11" value="Jump Squats" class="radio-button"
+                                        v-model="answers.question11">
+                                    <span class="ml-2">Jump Squats</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question11" value="Plank Holds" class="radio-button"
+                                        v-model="answers.question11">
+                                    <span class="ml-2">Plank Holds</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question11" value="Bodyweight Bridges"
+                                        class="radio-button" v-model="answers.question11">
+                                    <span class="ml-2">Bodyweight Bridges</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question11" value="Light-Weight Bicep Curls"
+                                        class="radio-button" v-model="answers.question11">
+                                    <span class="ml-2">Light-Weight Bicep Curls</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">12. What is the 'afterburn effect' in
+                                combined strength and cardio workouts? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question12" value="Increased fat burn during exercise"
+                                        class="radio-button" v-model="answers.question12">
+                                    <span class="ml-2">Increased fat burn during exercise</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question12" value="Elevated metabolic rate post-exercise"
+                                        class="radio-button" v-model="answers.question12">
+                                    <span class="ml-2">Elevated metabolic rate post-exercise</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question12" value="Reduced recovery time after workouts"
+                                        class="radio-button" v-model="answers.question12">
+                                    <span class="ml-2">Reduced recovery time after workouts</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question12"
+                                        value="Enhanced endurance during isometric holds" class="radio-button"
+                                        v-model="answers.question12">
+                                    <span class="ml-2">Enhanced endurance during isometric holds</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">13. How does Physique 57 reduce the risk of
+                                injury in daily life? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question13" value="By focusing solely on Type 2 fibers"
+                                        class="radio-button" v-model="answers.question13">
+                                    <span class="ml-2">By focusing solely on Type 2 fibers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question13"
+                                        value="By strengthening stabilizing muscles around joints" class="radio-button"
+                                        v-model="answers.question13">
+                                    <span class="ml-2">By strengthening stabilizing muscles around joints</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question13" value="By avoiding weight-bearing exercises"
+                                        class="radio-button" v-model="answers.question13">
+                                    <span class="ml-2">By avoiding weight-bearing exercises</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question13" value="By emphasizing low-intensity cardio"
+                                        class="radio-button" v-model="answers.question13">
+                                    <span class="ml-2">By emphasizing low-intensity cardio</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">14. What is the purpose of tempo changes in
+                                Physique 57 workouts? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question14" value="To isolate specific muscle groups"
+                                        class="radio-button" v-model="answers.question14">
+                                    <span class="ml-2">To isolate specific muscle groups</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question14"
+                                        value="To alternate between strength and cardio benefits" class="radio-button"
+                                        v-model="answers.question14">
+                                    <span class="ml-2">To alternate between strength and cardio benefits</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question14" value="To decrease time under tension"
+                                        class="radio-button" v-model="answers.question14">
+                                    <span class="ml-2">To decrease time under tension</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question14"
+                                        value="To target stabilizing muscles exclusively" class="radio-button"
+                                        v-model="answers.question14">
+                                    <span class="ml-2">To target stabilizing muscles exclusively</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">15. Which is NOT a benefit of resistance
+                                training? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question15" value="Improving joint stability"
+                                        class="radio-button" v-model="answers.question15">
+                                    <span class="ml-2">Improving joint stability</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question15" value="Increasing muscle endurance"
+                                        class="radio-button" v-model="answers.question15">
+                                    <span class="ml-2">Increasing muscle endurance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question15" value="Reducing cardiovascular endurance"
+                                        class="radio-button" v-model="answers.question15">
+                                    <span class="ml-2">Reducing cardiovascular endurance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question15" value="Boosting bone density"
+                                        class="radio-button" v-model="answers.question15">
+                                    <span class="ml-2">Boosting bone density</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="section-header">4. Combined Training and Functional Fitness</h3>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">16. What is the primary role of stabilizing
+                                muscles during functional movements? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question16" value="To enhance explosive power"
+                                        class="radio-button" v-model="answers.question16">
+                                    <span class="ml-2">To enhance explosive power</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question16"
+                                        value="To support joint stability and alignment" class="radio-button"
+                                        v-model="answers.question16">
+                                    <span class="ml-2">To support joint stability and alignment</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question16"
+                                        value="To increase blood flow to larger muscle groups" class="radio-button"
+                                        v-model="answers.question16">
+                                    <span class="ml-2">To increase blood flow to larger muscle groups</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question16" value="To prevent Type 2 fiber activation"
+                                        class="radio-button" v-model="answers.question16">
+                                    <span class="ml-2">To prevent Type 2 fiber activation</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">17. Why is it important to push muscles to
+                                fatigue in resistance training? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center"> <input type="radio" name="question17"
+                                        value="To reduce the risk of overtraining" class="radio-button"
+                                        v-model="answers.question17">
+                                    <span class="ml-2">To reduce the risk of overtraining</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question17"
+                                        value="To stimulate muscle adaptation and growth" class="radio-button"
+                                        v-model="answers.question17">
+                                    <span class="ml-2">To stimulate muscle adaptation and growth</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question17" value="To minimize cardiovascular strain"
+                                        class="radio-button" v-model="answers.question17">
+                                    <span class="ml-2">To minimize cardiovascular strain</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question17"
+                                        value="To avoid activating stabilizing muscles" class="radio-button"
+                                        v-model="answers.question17">
+                                    <span class="ml-2">To avoid activating stabilizing muscles</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">18. How does combining strength and cardio
+                                improve athletic performance? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question18"
+                                        value="By isolating endurance fibers exclusively" class="radio-button"
+                                        v-model="answers.question18">
+                                    <span class="ml-2">By isolating endurance fibers exclusively</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question18"
+                                        value="By increasing both power and aerobic capacity" class="radio-button"
+                                        v-model="answers.question18">
+                                    <span class="ml-2">By increasing both power and aerobic capacity</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question18" value="By minimizing Type 2 fiber activation"
+                                        class="radio-button" v-model="answers.question18">
+                                    <span class="ml-2">By minimizing Type 2 fiber activation</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question18" value="By reducing recovery time between sets"
+                                        class="radio-button" v-model="answers.question18">
+                                    <span class="ml-2">By reducing recovery time between sets</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">19. Which area is most at risk of sarcopenia
+                                and benefits greatly from resistance training? <span
+                                    class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question19" value="Core muscles" class="radio-button"
+                                        v-model="answers.question19">
+                                    <span class="ml-2">Core muscles</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question19" value="Posterior chain" class="radio-button"
+                                        v-model="answers.question19">
+                                    <span class="ml-2">Posterior chain</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question19" value="Forearm muscles" class="radio-button"
+                                        v-model="answers.question19">
+                                    <span class="ml-2">Forearm muscles</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question19" value="Abdominals" class="radio-button"
+                                        v-model="answers.question19">
+                                    <span class="ml-2">Abdominals</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">20. How does controlled movement enhance
+                                muscle engagement? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question20" value="By reducing time under tension"
+                                        class="radio-button" v-model="answers.question20">
+                                    <span class="ml-2">By reducing time under tension</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question20" value="By isolating larger muscle groups"
+                                        class="radio-button" v-model="answers.question20">
+                                    <span class="ml-2">By isolating larger muscle groups</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question20" value="By maximizing tension across fibers"
+                                        class="radio-button" v-model="answers.question20">
+                                    <span class="ml-2">By maximizing tension across fibers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question20" value="By prioritizing cardiovascular output"
+                                        class="radio-button" v-model="answers.question20">
+                                    <span class="ml-2">By prioritizing cardiovascular output</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="section-header">5. Physique 57 and Injury Prevention</h3>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">21. What is a common characteristic of Type
+                                1 muscle fibers? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question21" value="They grow larger than Type 2 fibers"
+                                        class="radio-button" v-model="answers.question21">
+                                    <span class="ml-2">They grow larger than Type 2 fibers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question21"
+                                        value="They are designed for high-intensity activities" class="radio-button"
+                                        v-model="answers.question21">
+                                    <span class="ml-2">They are designed for high-intensity activities</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question21"
+                                        value="They are activated during sustained, low-intensity activities"
+                                        class="radio-button" v-model="answers.question21">
+                                    <span class="ml-2">They are activated during sustained, low-intensity
+                                        activities</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question21" value="They are not involved in posture"
+                                        class="radio-button" v-model="answers.question21">
+                                    <span class="ml-2">They are not involved in posture</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">22. What role do osteoblasts play in bone
+                                health? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question22" value="They stimulate bone growth"
+                                        class="radio-button" v-model="answers.question22">
+                                    <span class="ml-2">They stimulate bone growth</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question22" value="They store fat in bones"
+                                        class="radio-button" v-model="answers.question22">
+                                    <span class="ml-2">They store fat in bones</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question22" value="They break down bone tissue"
+                                        class="radio-button" v-model="answers.question22">
+                                    <span class="ml-2">They break down bone tissue</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question22" value="They regulate calcium levels"
+                                        class="radio-button" v-model="answers.question22">
+                                    <span class="ml-2">They regulate calcium levels</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">23. What does the term 'muscular endurance'
+                                refer to? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question23" value="The ability to lift heavy weights"
+                                        class="radio-button" v-model="answers.question23">
+                                    <span class="ml-2">The ability to lift heavy weights</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question23"
+                                        value="The ability to perform high-intensity workouts" class="radio-button"
+                                        v-model="answers.question23">
+                                    <span class="ml-2">The ability to perform high-intensity workouts</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question23"
+                                        value="The ability to sustain prolonged exercise" class="radio-button"
+                                        v-model="answers.question23">
+                                    <span class="ml-2">The ability to sustain prolonged exercise</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question23" value="The ability to recover quickly"
+                                        class="radio-button" v-model="answers.question23">
+                                    <span class="ml-2">The ability to recover quickly</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">24. What does EPOC stand for in the context
+                                of exercise? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question24" value="Excessive Physical Output Control"
+                                        class="radio-button" v-model="answers.question24">
+                                    <span class="ml-2">Excessive Physical Output Control</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question24"
+                                        value="Excess Post-Exercise Oxygen Consumption" class="radio-button"
+                                        v-model="answers.question24">
+                                    <span class="ml-2">Excess Post-Exercise Oxygen Consumption</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question24"
+                                        value="Energy Post-Exercise Oxygen Consumption" class="radio-button"
+                                        v-model="answers.question24">
+                                    <span class="ml-2">Energy Post-Exercise Oxygen Consumption</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question24" value="Endurance Post-Exercise Oxygen Control"
+                                        class="radio-button" v-model="answers.question24">
+                                    <span class="ml-2">Endurance Post-Exercise Oxygen Control</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">25. Which type of training helps improve
+                                power and agility? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question25" value="Strength training" class="radio-button"
+                                        v-model="answers.question25">
+                                    <span class="ml-2">Strength training</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question25" value="Cardiovascular training"
+                                        class="radio-button" v-model="answers.question25">
+                                    <span class="ml-2">Cardiovascular training</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question25" value="Flexibility training"
+                                        class="radio-button" v-model="answers.question25">
+                                    <span class="ml-2">Flexibility training</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question25" value="Balance training" class="radio-button"
+                                        v-model="answers.question25">
+                                    <span class="ml-2">Balance training</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">26. How does Physique 57 ensure continuous
+                                improvement in workouts? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question26"
+                                        value="By incorporating more stretching and mobility work exclusively"
+                                        class="radio-button" v-model="answers.question26">
+                                    <span class="ml-2">By incorporating more stretching and mobility work
+                                        exclusively</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question26"
+                                        value="By focusing solely on cardiovascular exercises for endurance"
+                                        class="radio-button" v-model="answers.question26">
+                                    <span class="ml-2">By focusing solely on cardiovascular exercises for
+                                        endurance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question26"
+                                        value="By increasing time under tension without changing other variables"
+                                        class="radio-button" v-model="answers.question26">
+                                    <span class="ml-2">By increasing time under tension without changing other
+                                        variables</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question26"
+                                        value="By using progressive overload techniques" class="radio-button"
+                                        v-model="answers.question26">
+                                    <span class="ml-2">By using progressive overload techniques</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">27. What is one of the main goals of
+                                combining strength and cardio training? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question27" value="To reduce the need for rest"
+                                        class="radio-button" v-model="answers.question27">
+                                    <span class="ml-2">To reduce the need for rest</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question27" value="To focus solely on muscle size"
+                                        class="radio-button" v-model="answers.question27">
+                                    <span class="ml-2">To focus solely on muscle size</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question27" value="To improve overall fitness"
+                                        class="radio-button" v-model="answers.question27">
+                                    <span class="ml-2">To improve overall fitness</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question27" value="To increase body fat"
+                                        class="radio-button" v-model="answers.question27">
+                                    <span class="ml-2">To increase body fat</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">28. What is the primary goal of resistance
+                                training in relation to muscle fibers? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question28"
+                                        value="To challenge and break down muscle fibers" class="radio-button"
+                                        v-model="answers.question28">
+                                    <span class="ml-2">To challenge and break down muscle fibers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question28" value="To prevent muscle fatigue"
+                                        class="radio-button" v-model="answers.question28">
+                                    <span class="ml-2">To prevent muscle fatigue</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question28"
+                                        value="To increase muscle size without fatigue" class="radio-button"
+                                        v-model="answers.question28">
+                                    <span class="ml-2">To increase muscle size without fatigue</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question28" value="To enhance flexibility"
+                                        class="radio-button" v-model="answers.question28">
+                                    <span class="ml-2">To enhance flexibility</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">29. What is the effect of muscle fatigue on
+                                muscle growth? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question29"
+                                        value="It only builds endurance without contributing to strength gains"
+                                        class="radio-button" v-model="answers.question29">
+                                    <span class="ml-2">It only builds endurance without contributing to strength
+                                        gains</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question29"
+                                        value="It signals overtraining and potential muscle damage" class="radio-button"
+                                        v-model="answers.question29">
+                                    <span class="ml-2">It signals overtraining and potential muscle damage</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question29"
+                                        value="It prevents muscle recovery and inhibits growth" class="radio-button"
+                                        v-model="answers.question29">
+                                    <span class="ml-2">It prevents muscle recovery and inhibits growth</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question29"
+                                        value="It indicates sufficient challenge for muscle adaptation"
+                                        class="radio-button" v-model="answers.question29">
+                                    <span class="ml-2">It indicates sufficient challenge for muscle adaptation</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <label class="block text-lg font-semibold mb-4">30. What is the functional significance of
+                                the posterior chain in everyday movements? <span class="text-red-500">*</span></label>
+                            <div class="points">1 point</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="question30"
+                                        value="It reduces the need for cardiovascular endurance" class="radio-button"
+                                        v-model="answers.question30">
+                                    <span class="ml-2">It reduces the need for cardiovascular endurance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question30"
+                                        value="It enhances posture and mobility while supporting dynamic strength"
+                                        class="radio-button" v-model="answers.question30">
+                                    <span class="ml-2">It enhances posture and mobility while supporting dynamic
+                                        strength</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question30"
+                                        value="It primarily targets fast-twitch fibers for power-based movements"
+                                        class="radio-button" v-model="answers.question30">
+                                    <span class="ml-2">It primarily targets fast-twitch fibers for power-based
+                                        movements</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="question30" value="It focuses exclusively on flexibility"
+                                        class="radio-button" v-model="answers.question30">
+                                    <span class="ml-2">It focuses exclusively on flexibility</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-md">Submit</button>
+                    <button type="button" @click="downloadPDF"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition ml-4 shadow-md">Download
+                        as PDF</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <footer class="foot bg-gray-800 text-white p-4 text-center shadow-md">
+        <p>&copy; 2025 Strength & Resistance Quiz. Physique 57 India™️. All rights reserved.</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const { createApp, ref } = Vue
+        createApp({
+            setup() {
+                const answers = ref({
+                    question1: '',
+                    question2: '',
+                    question3: '',
+                    question4: '',
+                    question5: '',
+                    question6: '',
+                    question7: '',
+                    question8: '',
+                    question9: '',
+                    question10: '',
+                    question11: '',
+                    question12: '',
+                    question13: '',
+                    question14: '',
+                    question15: '',
+                    question16: '',
+                    question17: '',
+                    question18: '',
+                    question19: '',
+                    question20: '',
+                    question21: '',
+                    question22: '',
+                    question23: '',
+                    question24: '',
+                    question25: '',
+                    question26: '',
+                    question27: '',
+                    question28: '',
+                    question29: '',
+                    question30: ''
+                });
+                const instructorName = ref('');
+                const location = ref('');
+
+                const submitQuiz = () => {
+                    console.log(answers.value);
+                    alert('Quiz submitted! Check the console for answers.');
+                };
+
+                const downloadPDF = () => {
+                    const { jsPDF } = window.jspdf;
+                    const element = document.getElementById('app');
+
+                    html2canvas(element, { scale: 2 }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const pdf = new jsPDF('portrait', 'mm', 'a4');
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+                        // Calculate the number of pages needed
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const ratio = imgWidth / pdfWidth;
+                        const pageHeight = pdfHeight * ratio;
+                        const totalPages = Math.ceil(imgHeight / pageHeight);
+
+                        for (let i = 0; i < totalPages; i++) {
+                            const position = -(i * pageHeight);
+                            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight / ratio);
+                            if (i < totalPages - 1) {
+                                pdf.addPage();
+                            }
+                        }
+
+                        pdf.save('Strength_Resistance_Quiz.pdf');
+                    });
+                };
+
+
+                return {
+                    answers,
+                    instructorName,
+                    location,
+                    submitQuiz,
+                    downloadPDF
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
